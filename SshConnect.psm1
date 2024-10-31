@@ -3,10 +3,13 @@ function New-SshConnectionMenu {
     .SYNOPSIS
         Shows menu for quick SSH connections.
     .DESCRIPTION
-        Shows menu for quick SSH connections. Hosts stored in SshConnect.list text file in your home directory
-        It will be created on the first use.
+        Shows menu for quick SSH connections. Hosts stored in SshConnect.list text file in your home directory.
+        It will be created on the first use. Lines starting with # are comments and will be ignored.
+        Lines starting with ; are "visible comments" and will be shown in menu, but nothing else.
+        You can use tham to group your hosts. 
+        Host comments are in the same string with username@hostname, marked with # and will be shown.
     .NOTES
-        This is for personal use. Don't wait more
+        This is for personal use. Don't wait more.
     .LINK
         https://github.com/AleksejEgorov/SshConnect
     .EXAMPLE
@@ -49,7 +52,9 @@ function New-SshConnectionMenu {
             @(
                 "# This is device list file for New-SshConnectionMenu from SshConnect.psm1 module.",
                 "# Lines starting with # are comments and will be ignored.",
-                "# Inline comments will be shown.",
+                '# Lines starting with ; are "visible comments" and will be shown in menu',
+                "# You can use tham to group your hosts.",
+                "# Host comments are in the same string with username@hostname, marked with # and will be shown.",
                 "# Don't remove this notification.",
                 "# Type hosts line by line as: username@hostname # Optional comment"
             ) | Out-File $ListFile -Encoding utf8
@@ -60,20 +65,27 @@ function New-SshConnectionMenu {
         if ($DeviceList) {
             Write-Host "Select host to connect via SSH:`n"
 
-            for ($i = 0; $i -lt $DeviceList.Count; $i++) {
+            $i = 0
+            foreach ($Line in $DeviceList) {
                 $DeviceConnection, $DeviceUserName, $DeviceHostName, $DeviceComment = $null
+                if ($Line -like ";*") {
+                    Write-Host $Line.TrimStart(';').Trim() -ForegroundColor DarkGray
+                    continue
+                }
 
-                $DeviceConnection = $DeviceList[$i].Split('#')[0].Trim()
+                $DeviceConnection = $Line.Split('#')[0].Trim()
 
-                if ($DeviceList[$i] -like "*#*") {
-                    $DeviceComment = $DeviceList[$i].Substring($DeviceList[$i].IndexOf('#'))
+                if ($Line -like "*#*") {
+                    $DeviceComment = $Line.Substring($Line.IndexOf('#'))
                 }
 
                 $DeviceUserName = $DeviceConnection.Split('@')[0]
                 $DeviceHostName = $DeviceConnection.Split('@')[-1]
 
-                Write-Host "$($i + 1) : $DeviceHostName (as $DeviceUserName) $DeviceComment"
+                Write-Host "$($i + 1) : $DeviceHostName (as $DeviceUserName)" -NoNewline
+                Write-Host " $DeviceComment" -ForegroundColor DarkGray
                 $Selectors."dev$i" = $DeviceConnection
+                $i++
             }
 
         }
@@ -88,7 +100,7 @@ function New-SshConnectionMenu {
             ssh $Selectors."dev$Responce"
         }
         elseif ($Responce -match "^[Rr]$") {}
-        elseif ($Responce -match "^[Xx]$") {exit 0}
+        elseif ($Responce -match "^[Xx]$") {return}
         elseif ($Responce -match "^[Ee]$") {
             Start-Process notepad.exe -ArgumentList $ListFile
         }
