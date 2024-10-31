@@ -3,7 +3,8 @@ function New-SshConnectionMenu {
     .SYNOPSIS
         Shows menu for quick SSH connections.
     .DESCRIPTION
-        Shows menu for quick SSH connections. Hosts stored in SshConnect.list text file in module directory.
+        Shows menu for quick SSH connections. Hosts stored in SshConnect.list text file in your home directory
+        It will be created on the first use.
     .NOTES
         This is for personal use. Don't wait more
     .LINK
@@ -29,7 +30,7 @@ function New-SshConnectionMenu {
     
     $WindowTitle = $host.UI.RawUI.WindowTitle
     if (!$ListFile) {
-        $ListFile = [System.IO.Path]::Combine($PSScriptRoot,'SshConnect.list')
+        $ListFile = [System.IO.Path]::Combine($HOME,'SshConnect.list')
     }
 
     while ($true) {   
@@ -46,10 +47,11 @@ function New-SshConnectionMenu {
         else {
             $ListContent = @()
             @(
-                "# This is device list file for SshConnect.ps1 profile script.",
+                "# This is device list file for New-SshConnectionMenu from SshConnect.psm1 module.",
                 "# Lines starting with # are comments and will be ignored.",
+                "# Inline comments will be shown.",
                 "# Don't remove this notification.",
-                "# Type hosts line by line as username@hostname"
+                "# Type hosts line by line as: username@hostname # Optional comment"
             ) | Out-File $ListFile -Encoding utf8
         }
 

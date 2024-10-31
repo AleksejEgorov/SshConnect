@@ -1,0 +1,7 @@
+﻿# This is device list file for New-SshConnectionMenu from SshConnect.psm1 module.
+# Lines starting with # are comments and will be ignored. 
+# Inline comments will be shown.
+# Don't remove this notification. 
+# Type hosts line by line as username@hostname # Optional comment
+
+admin@hostname.domain.local # This is example record
