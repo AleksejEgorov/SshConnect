@@ -1,4 +1,22 @@
 function New-SshConnectionMenu {
+    <#
+    .SYNOPSIS
+        Shows menu for quick SSH connections.
+    .DESCRIPTION
+        Shows menu for quick SSH connections. Hosts stored in SshConnect.list text file in module directory.
+    .NOTES
+        This is for personal use. Don't wait more
+    .LINK
+        https://github.com/AleksejEgorov/SshConnect
+    .EXAMPLE
+        New-SshConnectionMenu 
+        Show menu based on default list file
+    .EXAMPLE
+        New-SshConnectionMenu -ListFile $HOME\Documents\SSH_hosts.txt
+        Show menu based on your list file
+    #>
+    
+    
     [CmdletBinding()]
     param (
         # Host list file
